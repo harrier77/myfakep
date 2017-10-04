@@ -37,6 +37,7 @@ public class Main extends JavaPlugin {
 	private ProtocolManager protocolManager;
 	public NPCManager npcManager;
 	
+	
 	public static Main getInstance() {
         return instance;
     }
@@ -49,17 +50,16 @@ public class Main extends JavaPlugin {
 		Logger log = Bukkit.getLogger();
 		log.info("Queston plugin è enabled 1");
 		setInstance(this);
-        this.getCommand("fp").setExecutor(new FPCommand());
+        this.getCommand("myfakep").setExecutor(new FPCommand());
         this.npcManager = new NPCManager();
     }
    
-	
-	
+		
 	@SuppressWarnings("deprecation")
 	public void players_number(String numero) {
 		 protocolManager = ProtocolLibrary.getProtocolManager();
 		 
-		 protocolManager.addPacketListener(
+		 /*protocolManager.addPacketListener(
 		  new PacketAdapter(PacketAdapter.params(this, PacketType.Status.Server.OUT_SERVER_INFO).optionAsync()) {
 		    @Override
 		    public void onPacketSending(PacketEvent event) {
@@ -67,9 +67,10 @@ public class Main extends JavaPlugin {
 		        //ping.setPlayersVisible(false);
 		        ping.setPlayersOnline(Integer.parseInt(numero));
 		    }
-		  });
-	 
-	 } //EOF class 
+		  });*/
+		 Logger log = Bukkit.getLogger();
+		 log.info("fine funzione players_number");
+	 } //EOF players_number 
 	
 	
 	@Override
@@ -78,6 +79,7 @@ public class Main extends JavaPlugin {
     }
 
 }
+
 
 class NPCManager {
 
@@ -92,13 +94,12 @@ class NPCManager {
         npcPlayer.setPlayerListName(npcName);
 
         npc.setLocation(location.getX()+1, location.getY(), location.getZ()+1, player.getLocation().getYaw(), player.getLocation().getPitch());
-        
-        //la connessione viene attivata usando net.minecraft.server che non è documentata?
+                //la connessione viene attivata usando net.minecraft.server che non è documentata?
         PlayerConnection connection = ((CraftPlayer) player).getHandle().playerConnection;
         connection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, npc));
         //connection.sendPacket(new PacketPlayOutNamedEntitySpawn(npc));
         //connection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER, npc));
-        player.sendMessage("Fakeplayer "+npcName+" creato...");
+        
 
     }
 }
@@ -113,15 +114,16 @@ class FPCommand implements CommandExecutor {
         if (sender instanceof Player) {
             Player player = (Player) sender;
             System.err.println("comando");
-            if (command.getName().equalsIgnoreCase("fp")) {
-            	System.err.println("comando fp");
+            if (command.getName().equalsIgnoreCase("myfakep")) {
+            	System.err.println("comando myfakep");
             	if (args.length == 0) { 
-            		player.sendMessage("[nome o numero]");
+            		player.sendMessage("/myfakep create [nome]");
             	}
             	if (args.length == 2) {
                     if (args[0].equalsIgnoreCase("create")) {
                         String npcName = args[1];
                         plugin.npcManager.createNPC(player, npcName);
+                        player.sendMessage("Fakeplayer "+npcName+" creato...");
                     }
                     if (args[0].equalsIgnoreCase("number")) {
                     	player.sendMessage("numero settato");
@@ -133,4 +135,4 @@ class FPCommand implements CommandExecutor {
         }
         return true;
     }
-}
+} 
